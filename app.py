@@ -116,7 +116,7 @@ try:
             
             st.divider()
             st.markdown("### 🌟 Cumpriu uma missão?")
-            st.link_button("Reivindicar minha Estrela (Forms)", "COLE_AQUI_O_LINK_DO_SEU_FORMS", use_container_width=True)
+            st.link_button("Reivindicar minha Estrela (Forms)", "https://docs.google.com/forms/d/e/1FAIpQLSf8DSoz5vCFYFeNMfgwWxFAWyIvHyIuA2BFL99Lrx0wXP8TAQ/viewform?usp=publish-editor", use_container_width=True)
             
     else:
         # Mensagem de diagnóstico caso os nomes das colunas na planilha ainda estejam diferentes
