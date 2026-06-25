@@ -33,7 +33,7 @@ def carregar_dados(url_planilha):
 # ==========================================
 # COLOQUE O LINK DA SUA PLANILHA AQUI
 # ==========================================
-LINK_GOOGLE_SHEETS = "COLE_O_LINK_AQUI" 
+LINK_GOOGLE_SHEETS = "https://docs.google.com/spreadsheets/d/1Ynoj6-Pm2WqTZ0uUnJCJ0IGL_7J81KFj/edit?usp=drive_link&ouid=111398974253454738302&rtpof=true&sd=true" 
 
 try:
     df = carregar_dados(LINK_GOOGLE_SHEETS)
