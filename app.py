@@ -10,16 +10,16 @@ st.markdown("""
     .titulo { text-align: center; font-size: 3em; font-weight: bold; color: #1E90FF; } 
     .subtitulo { text-align: center; color: #A9A9A9; margin-bottom: 40px; }
     .missao-card { background-color: #1E1E24; padding: 15px; border-radius: 8px; margin-bottom: 10px; border-left: 5px solid #1E90FF; }
+    .missao-bonus { background-color: #1E1E24; padding: 15px; border-radius: 8px; margin-bottom: 10px; border-left: 5px solid #FFD700; }
     </style>
 """, unsafe_allow_html=True)
 
 st.markdown('<div class="titulo">🚀 Portal de Gamificação Level 5</div>', unsafe_allow_html=True)
 st.markdown('<div class="subtitulo">Sua jornada de desenvolvimento começa aqui. 1 Estrela = 1 Nível!</div>', unsafe_allow_html=True)
 
-# 2. Função Robusta para ler os dados da Planilha
+# 2. Função para ler os dados da Planilha
 @st.cache_data(ttl=30)
 def carregar_dados(url_planilha):
-    # Extrai o ID da planilha de forma segura usando Expressão Regular (Regex)
     match = re.search(r"/d/([a-zA-Z0-9-_]+)", url_planilha)
     if match:
         id_planilha = match.group(1)
@@ -28,16 +28,12 @@ def carregar_dados(url_planilha):
         url_csv = url_planilha
         
     df = pd.read_csv(url_csv)
-    
-    # Remove espaços em branco invisíveis antes ou depois dos nomes das colunas
     df.columns = df.columns.str.strip()
     
-    # Garante que a coluna Estrelas exista e seja numérica
     if 'Estrelas' not in df.columns:
         df['Estrelas'] = 0
     df['Estrelas'] = pd.to_numeric(df['Estrelas'], errors='coerce').fillna(0).astype(int)
         
-    # Ordena do maior para o menor número de estrelas
     df = df.sort_values(by="Estrelas", ascending=False).reset_index(drop=True)
     return df
 
@@ -49,7 +45,6 @@ LINK_GOOGLE_SHEETS = "https://docs.google.com/spreadsheets/d/1Ynoj6-Pm2WqTZ0uUnJ
 try:
     df = carregar_dados(LINK_GOOGLE_SHEETS)
     
-    # Verifica se as colunas esperadas realmente existem após a leitura
     if 'Nome Completo' in df.columns and 'Equipe' in df.columns:
         
         col_ranking, col_regras = st.columns([2, 1])
@@ -57,7 +52,6 @@ try:
         with col_ranking:
             st.markdown("<h3 style='text-align: center;'>🏆 Pódio de Honra</h3><br>", unsafe_allow_html=True)
             
-            # Pódio Top 3 (Ouro, Prata e Bronze)
             p1, p2, p3 = st.columns(3)
             if len(df) >= 3:
                 with p2:
@@ -77,7 +71,6 @@ try:
 
             st.divider()
 
-            # Tabela Geral Interativa
             st.markdown("### 📋 Tabela de Classificação")
             busca = st.text_input("🔍 Busque pelo seu nome:")
             
@@ -96,6 +89,7 @@ try:
             st.markdown("### 🎯 Mural de Missões")
             st.markdown("*Cumpra as missões abaixo e reivindique sua estrela com o RH!*")
             
+            # Adicionadas as duas novas missões mantendo as anteriores intactas
             st.markdown("""
             <div class="missao-card">
                 <b>🎩 Hat-Trick de RG</b><br>Participar de 3 Reuniões Gerais seguidas.
@@ -112,14 +106,19 @@ try:
             <div class="missao-card">
                 <b>🌐 Representante</b><br>Participar de um evento da rede EJ.
             </div>
+            <div class="missao-card">
+                <b>🏫 Visitar a Sala</b><br>Fazer uma visita presencial à sala física da Level 5.
+            </div>
+            <div class="missao-bonus">
+                <b>🎯 Captar um Lead 🔥</b><br>Trazer um cliente potencial qualificado para a EJ.<br><span style='color: #FFD700; font-weight: bold;'>BÔNUS: Vale 3 Estrelas! (Sobe 3 Níveis)</span>
+            </div>
             """, unsafe_allow_html=True)
             
             st.divider()
             st.markdown("### 🌟 Cumpriu uma missão?")
-            st.link_button("Reivindicar minha Estrela (Forms)", "https://docs.google.com/forms/d/e/1FAIpQLSf8DSoz5vCFYFeNMfgwWxFAWyIvHyIuA2BFL99Lrx0wXP8TAQ/viewform?usp=publish-editor", use_container_width=True)
+            st.link_button("Reivindicar minha Estrela (Forms)", "https://docs.google.com/forms/d/e/1FAIpQLSf8DSoz5vCFYFeNMfgwWxFAWyIvHyIuA2BFL99Lrx0wXP8TAQ/viewform?usp=dialog", use_container_width=True)
             
     else:
-        # Mensagem de diagnóstico caso os nomes das colunas na planilha ainda estejam diferentes
         st.error(f"⚠️ Erro de Colunas! O código esperava encontrar 'Nome Completo' e 'Equipe'. As colunas detectadas na sua planilha foram: {list(df.columns)}")
 
 except Exception as e:
