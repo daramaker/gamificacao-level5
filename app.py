@@ -9,8 +9,9 @@ st.markdown("""
     <style>
     .titulo { text-align: center; font-size: 3em; font-weight: bold; color: #1E90FF; } 
     .subtitulo { text-align: center; color: #A9A9A9; margin-bottom: 40px; }
-    .missao-card { background-color: #1E1E24; padding: 15px; border-radius: 8px; margin-bottom: 10px; border-left: 5px solid #1E90FF; }
-    .missao-bonus { background-color: #1E1E24; padding: 15px; border-radius: 8px; margin-bottom: 10px; border-left: 5px solid #FFD700; }
+    /* Ajuste de cor para branco (#FFFFFF) nas missões */
+    .missao-card { background-color: #1E1E24; padding: 15px; border-radius: 8px; margin-bottom: 10px; border-left: 5px solid #1E90FF; color: #FFFFFF; }
+    .missao-bonus { background-color: #1E1E24; padding: 15px; border-radius: 8px; margin-bottom: 10px; border-left: 5px solid #FFD700; color: #FFFFFF; }
     </style>
 """, unsafe_allow_html=True)
 
@@ -18,7 +19,7 @@ st.markdown('<div class="titulo">🚀 Portal de Gamificação Level 5</div>', un
 st.markdown('<div class="subtitulo">Sua jornada de desenvolvimento começa aqui. 1 Estrela = 1 Nível!</div>', unsafe_allow_html=True)
 
 # 2. Função Inteligente para ler e mapear os dados da Planilha
-@st.cache_data(ttl=10)  # Tempo reduzido para atualizar os testes mais rápido
+@st.cache_data(ttl=10)
 def carregar_dados(url_planilha):
     match = re.search(r"/d/([a-zA-Z0-9-_]+)", url_planilha)
     if match:
@@ -29,7 +30,6 @@ def carregar_dados(url_planilha):
         
     df = pd.read_csv(url_csv)
     
-    # Mapeamento automático inteligente (ignora maiúsculas, minúsculas, espaços e plurais)
     mapeamento_colunas = {}
     for col in df.columns:
         col_limpa = str(col).strip().lower()
@@ -42,7 +42,6 @@ def carregar_dados(url_planilha):
             
     df = df.rename(columns=mapeamento_colunas)
     
-    # Garantias de segurança caso alguma coluna falte por completo
     if 'Nome Completo' not in df.columns:
         df['Nome Completo'] = "Membro Sem Nome"
     if 'Equipe' not in df.columns:
@@ -50,10 +49,7 @@ def carregar_dados(url_planilha):
     if 'Estrelas' not in df.columns:
         df['Estrelas'] = 0
         
-    # Converte a pontuação para números inteiros de forma segura
     df['Estrelas'] = pd.to_numeric(df['Estrelas'], errors='coerce').fillna(0).astype(int)
-        
-    # Ordena rigorosamente do maior para o menor número de estrelas
     df = df.sort_values(by="Estrelas", ascending=False).reset_index(drop=True)
     return df
 
@@ -70,7 +66,6 @@ try:
     with col_ranking:
         st.markdown("<h3 style='text-align: center;'>🏆 Pódio de Honra</h3><br>", unsafe_allow_html=True)
         
-        # Pódio estruturado no formato tradicional (2º lugar na esquerda, 1º no centro, 3º na direita)
         p1, p2, p3 = st.columns(3)
         if len(df) >= 3:
             with p2:
